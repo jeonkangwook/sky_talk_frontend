@@ -36,5 +36,5 @@ export const useSessionStore = defineStore('session', () => {
     isLoggedIn.value = false
   }
 
-  return { username, usermobile, isLoggedIn, setSession, clearSession }
+  return { username, usermobile, isLoggedIn,userno, userId,setSession, clearSession }
 })

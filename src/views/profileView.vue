@@ -11,7 +11,6 @@ const imgPath = ref(null);
 const status = ref(null);
 const friUserNo = ref('');
 const myUserNo = ref(sessionStore.userno);
-const userloginid = ref(sessionStore.userId);
 const friendList = ref<Friend[]>([]);
 const notFri = ref(false);
 const double = ref<Friend | null>(null);
@@ -43,33 +42,32 @@ onMounted(async () => {
 const handleFindFriend = async () => {
   console.log(loginId.value);
     try {
-      console.log("야얏",userloginid.value);
-      if(loginId.value!==userloginid.value){
-        const response = await $axios.get('/api/findFriend', {
-          params: {
-            loginId: loginId.value
-          }
-        });
-        double.value = friendList.value.find(
-          (item) => item.userNo === response.data.userNo
-        )|| null;
-        if(double.value!==null){
-          doubleFri.value = true;
-        }else{
-          doubleFri.value = false;
-        }
-        nickname.value = response.data.nickname; // API로부터 받은 데이터를 변수에 저장
-        imgPath.value = response.data.imgPath; // API로부터 받은 데이터를 변수에 저장
-        status.value = response.data.status; // API로부터 받은 데이터를 변수에 저장
-        friUserNo.value = response.data.userNo;
-        if(response.data===''){
-          notFri.value = true;
-        }else{
-          notFri.value = false;
-        }
-      }else{
-        return alert("본인입니다.");
+      const response = await $axios.get('/api/findFriend', {
+      params: {
+        loginId: loginId.value
       }
+    });
+    double.value = friendList.value.find(
+      (item) => item.userNo === response.data.userNo
+    )|| null;
+    if(double.value!==null){
+      doubleFri.value = true;
+    }else{
+      doubleFri.value = false;
+    }
+    nickname.value = response.data.nickname; // API로부터 받은 데이터를 변수에 저장
+    imgPath.value = response.data.imgPath; // API로부터 받은 데이터를 변수에 저장
+    status.value = response.data.status; // API로부터 받은 데이터를 변수에 저장
+    friUserNo.value = response.data.userNo;
+    if(response.data===''){
+      notFri.value = true;
+    }else{
+      notFri.value = false;
+    }
+    console.log("바껴라",double.value);
+    console.log("바껴라",response.data);
+    console.log("바껴라",doubleFri.value);
+    console.log("바껴라222",notFri.value);
     } catch (error) {
       console.error('문제발생:', error);
     }
