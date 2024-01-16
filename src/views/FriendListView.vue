@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { inject, ref,computed,watch,onMounted  } from 'vue';
 import { useSessionStore } from '@/stores/session';
+import { useRouter } from 'vue-router';
 
 const sessionStore = useSessionStore()
 
@@ -16,6 +17,7 @@ const friendList = ref<Friend[]>([]);
 const notFri = ref(false);
 const double = ref<Friend | null>(null);
 const doubleFri = ref(false);
+const router = useRouter();
 
 
 interface Friend {
@@ -33,8 +35,6 @@ onMounted(async () => {
         }
       });
       friendList.value = response.data;
-      console.log(response);
-      console.log(friendList.value);
     } catch (error) {
       console.error('문제 발생:', error);
     }
@@ -43,7 +43,6 @@ onMounted(async () => {
 const handleFindFriend = async () => {
   console.log(loginId.value);
     try {
-      console.log("야얏",userloginid.value);
       if(loginId.value!==userloginid.value){
         const response = await $axios.get('/api/findFriend', {
           params: {
@@ -76,9 +75,6 @@ const handleFindFriend = async () => {
 };
 
 const handleAddFriend = async () => {
-  console.log('fri',friUserNo.value);
-  console.log('my',myUserNo.value);
-  console.log('session',sessionStore);
     try {
       const response = await $axios.post('/api/addFriend', {
         friUserNo: friUserNo.value,
@@ -91,14 +87,35 @@ const handleAddFriend = async () => {
     });
     friendList.value = res.data;
     doubleFri.value = true;
-    console.log(res);
-    console.log(friendList.value);
-    console.log("response",response.data);
-    console.log(response);
     } catch (error) {
       console.error('문제발생:', error);
     }
 };
+
+const getImageUrlRS = async () => {
+  
+};
+function getLocalImagePath(imagePath: string | undefined): string {
+    if (imagePath) {
+      return `http://localhost:8080/getImage?path=${imagePath}`;
+    }
+    return ''; // 경로가 없는 경우 빈 문자열 반환하거나 다른 처리를 할 수 있습니다.
+}
+
+// const chatStart = async (userNo: number) => {
+//   router.push({ name: 'chatRoom', params: { userNo } });
+//   console.log("ccc");
+// };
+function chatStart(userNo: number) {
+  console.log("gasd",userNo);
+	router.push({
+		name: 'chatRoom',
+		query: { // params가 state로 바뀌었다.
+			friUserNo :  userNo ,
+		},
+	});
+}
+
 
 </script>
 
@@ -106,20 +123,22 @@ const handleAddFriend = async () => {
   <div>
     FriendListView
     <div>
-      <p>프로필 관리</p>
-      <input type="text" placeholder="이름이나 아이디" v-model="loginId">
-      <button type="button" @click="handleFindFriend">찾기</button>
+      <RouterLink to="/Profile">프로필 관리</RouterLink>
+      <br>
+      <RouterLink to="/chat">채팅</RouterLink>
+      <br>
+      <RouterLink to="/socket">연결</RouterLink>
     </div>
     <div>
       <p>친구찾기</p>
       <input type="text" placeholder="이름이나 아이디" v-model="loginId">
       <button type="button" @click="handleFindFriend">찾기</button>
     </div>
-    <div>
+    <div v-if="nickname">
       <!-- API로부터 받은 데이터를 화면에 표시 -->
-      <p>{{ nickname }}</p>
-      <p>{{ status }}</p>
-      <p>{{ imgPath }}</p>
+      <p>이름 : {{ nickname }}</p>
+      <p>상태 메시지 : {{ status }}</p>
+      <img :src="getLocalImagePath(imgPath)" alt="프로필 사진" v-if="imgPath">
       <button type="button" v-show="nickname" :disabled="doubleFri" @click="handleAddFriend">친구추가</button>
     </div>
     <div v-if="doubleFri">
@@ -130,16 +149,20 @@ const handleAddFriend = async () => {
     </div>
     <div>
       <p>친구 리스트</p>
-      <div v-for="friend in friendList" :key="friend.userNo">
+      <div v-for="friend in friendList" :key="friend.userNo" @click="chatStart(friend.userNo)">
         <!-- 친구의 정보를 표시하는 예시 -->
-        <p>{{ friend.nickname }}</p>
-        <p>{{ friend.status }}</p>
-        <p>{{ friend.imgPath }}</p>
-        <!-- 필요한 친구 정보를 출력하도록 수정 -->
+        <p>이름:{{ friend.nickname }}</p>
+        <p>상태 메시지:{{ friend.status }}</p>
+        <img :src="getLocalImagePath(friend.imgPath)" alt="프로필 사진" v-if="friend.imgPath">
       </div>
     </div>
 
   </div>
 </template>
 
-<style lang="scss" scoped></style>
+<style scoped>
+img {
+  max-width: 100px;
+  max-height: 100px;
+}
+</style>

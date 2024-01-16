@@ -64,7 +64,32 @@ const router = createRouter({
       path: '/:pathMatch(.*)*',
       name: 'NotFound',
       component: () => import('../views/404.vue')
-    }
+    },
+    {
+      path: '/profile',
+      name: 'profile',
+      component: () => import('../views/ProfileView.vue'),
+    },
+    {
+      path: '/profileCreate',
+      name: 'profileCreate',
+      component: () => import('../views/ProfileCreateView.vue'),
+    },
+    {
+      path: '/chatRoom',
+      name: 'chatRoom',
+      component: () => import('../views/chatRoomView.vue'),
+    },
+    {
+      path: '/chat',
+      name: 'chat',
+      component: () => import('../views/chatView.vue'),
+    },
+    {
+      path: '/socket',
+      name: 'socket',
+      component: () => import('../views/socket.vue'),
+    },
   ]
 })
 
