@@ -125,9 +125,7 @@ function chatStart(userNo: number) {
     <div>
       <RouterLink to="/Profile">프로필 관리</RouterLink>
       <br>
-      <RouterLink to="/chat">채팅</RouterLink>
-      <br>
-      <RouterLink to="/socket">연결</RouterLink>
+      <RouterLink to="/chatChat">소켓</RouterLink>
     </div>
     <div>
       <p>친구찾기</p>

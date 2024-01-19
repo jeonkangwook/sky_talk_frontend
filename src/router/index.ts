@@ -81,14 +81,9 @@ const router = createRouter({
       component: () => import('../views/chatRoomView.vue'),
     },
     {
-      path: '/chat',
-      name: 'chat',
-      component: () => import('../views/chatView.vue'),
-    },
-    {
-      path: '/socket',
-      name: 'socket',
-      component: () => import('../views/socket.vue'),
+      path: '/chatChat',
+      name: 'chatChat',
+      component: () => import('../views/ChatChat.vue'),
     },
   ]
 })
