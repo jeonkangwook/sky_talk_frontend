@@ -8,7 +8,7 @@ const router = useRouter();
 const route = useRoute();
 const $axios = inject<any>('$axios');
 const chatContent = ref('');
-const chatRoomNo = ref(0);
+const chatRoomNo = ref<any>('');
 const chatList = ref<chat[]>([]);
 const sessionStore = useSessionStore();
 const UserNo = ref(sessionStore.userno);
@@ -42,7 +42,8 @@ const formatTimestamp = (timestamp: string) => {
 
     return `${day}일 ${hours}:${minutes}`;
 };
-const fetchData = async () => {
+
+const charList = async () => {
   const response = await $axios.get('/api/chatContent', {
     params: {
       chatRoomNo: chatRoomNo.value
@@ -50,61 +51,93 @@ const fetchData = async () => {
   });
   chatList.value = response.data;
 };
+
+const read = async () => {
+  console.log("두가지중무엇일까요",UserNo.value)
+  const respon = await $axios.post('/api/chatRead', {
+      chatRoomNo : chatRoomNo.value,
+      userNo : UserNo.value,
+  });
+};
 socket.on('message', (data) => {
     console.log('chat-message event received', data);
     // 수신된 메시지 처리
     // chatList를 업데이트하거나 다른 로직 수행
-    fetchData();
+    charList();
+    read();
 });
 // socket.on('message', (data) => {
 //     console.log('Received message from server:', data.text);
 //     msg.value = data.text;
 //   });
-console.log('Socket connected:', socket.connected);
 
 onMounted(async () => {
-  const res = await $axios.get('/api/findChatRoom', {params: 
-    {
-      sendUserNo : UserNo.value,
-      getUserNo : friUserNo
+  console.log("UserNo",UserNo.value);
+  console.log("friUserNo",friUserNo);
+  if(friUserNo){
+    const res = await $axios.get('/api/findChatRoom', {params: 
+      {
+        sendUserNo : UserNo.value,
+        getUserNo : friUserNo
+      }
+    });
+    console.log("ressss",res);
+  
+    if(res.data !== 0){
+      chatRoomNo.value = res.data;
     }
-  });
-  if(res.data !== 0){
-    chatRoomNo.value = res.data;
+  }else{
+    chatRoomNo.value = route.query.chatRoomNo;
   }
+
   const response = await $axios.get('/api/chatContent', {params: 
     {
       chatRoomNo : chatRoomNo.value
     }
   });
+
+  const respon = await $axios.post('/api/chatRead', {
+      chatRoomNo : chatRoomNo.value,
+      userNo : UserNo.value,
+  });
+
   chatList.value = response.data;
 });
+
+
 onBeforeUnmount(() => {
     // 컴포넌트가 언마운트될 때 소켓 정리 또는 연결 종료
   socket.on('disconnect', () => {
     console.log('Disconnected from server');
   });
+  socket.disconnect();
 });
 
 const onSubmit = async() => {
   socket.emit('chat-message', {
-    chatRoomNo : chatRoomNo.value
+    chatRoomNo : chatRoomNo.value,
+    sendUserNo : UserNo.value,
   });
-    console.log("chatContent",chatContent.value);
-    console.log("UserNo",UserNo.value);
-    console.log("friUserNo",friUserNo);
+
+  console.log("chatContent",chatContent.value);
+  console.log("UserNo",UserNo.value);
+  console.log("friUserNo",friUserNo);
+
   const res = await $axios.post('/api/chatSend', {
     content : chatContent.value,
     sendUserNo : UserNo.value,
     userNo : friUserNo
   });
+
   chatRoomNo.value = res.data;
   console.log("res.data",res.data);
+
   const response = await $axios.get('/api/chatContent', {params: 
     {
         chatRoomNo : chatRoomNo.value
     }
   });
+
   console.log("response",response);
   chatList.value = response.data;
   chatContent.value = "";
@@ -114,7 +147,7 @@ const onSubmit = async() => {
 <template>
     <h3>채팅</h3>
     <div v-for="chat in chatList" :key="chat.chatNo" class="chat-container" ref="chatContainer">
-        <p v-if="chat.sendUserNo == currentUser" style="text-align: left;">
+        <p v-if="chat.sendUserNo != UserNo" style="text-align: left;">
         {{ chat.sendUserName }}: {{ chat.content }}<br> {{ formatTimestamp(chat.chatDtm) }}
         </p>
         <!-- 받는 사람이면 오른쪽으로 표시 -->

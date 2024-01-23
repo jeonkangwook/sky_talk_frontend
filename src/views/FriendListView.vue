@@ -92,9 +92,6 @@ const handleAddFriend = async () => {
     }
 };
 
-const getImageUrlRS = async () => {
-  
-};
 function getLocalImagePath(imagePath: string | undefined): string {
     if (imagePath) {
       return `http://localhost:8080/getImage?path=${imagePath}`;
@@ -107,13 +104,17 @@ function getLocalImagePath(imagePath: string | undefined): string {
 //   console.log("ccc");
 // };
 function chatStart(userNo: number) {
-  console.log("gasd",userNo);
-	router.push({
-		name: 'chatRoom',
-		query: { // params가 state로 바뀌었다.
-			friUserNo :  userNo ,
-		},
-	});
+  const confirmMessage = `채팅을 시작하시겠습니까?`;
+
+  if (confirm(confirmMessage)) {
+    console.log("gasd", userNo);
+    router.push({
+      name: 'chatRoom',
+      query: {
+        friUserNo: userNo,
+      },
+    });
+  }
 }
 
 
@@ -147,11 +148,13 @@ function chatStart(userNo: number) {
     </div>
     <div>
       <p>친구 리스트</p>
+      <hr>
       <div v-for="friend in friendList" :key="friend.userNo" @click="chatStart(friend.userNo)">
         <!-- 친구의 정보를 표시하는 예시 -->
         <p>이름:{{ friend.nickname }}</p>
         <p>상태 메시지:{{ friend.status }}</p>
         <img :src="getLocalImagePath(friend.imgPath)" alt="프로필 사진" v-if="friend.imgPath">
+        <hr>
       </div>
     </div>
 
