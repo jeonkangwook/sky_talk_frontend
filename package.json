@@ -19,6 +19,8 @@
     "express": "^4.18.2",
     "express-ws": "^5.0.2",
     "pinia": "^2.1.7",
+    "pinia-plugin-persist": "^1.0.0",
+    "pinia-plugin-persistedstate": "^3.2.1",
     "socket.io": "^4.7.4",
     "socket.io-client": "^4.7.4",
     "sockjs-client": "^1.6.1",
@@ -26,7 +28,8 @@
     "vue-native-websocket-vue3": "^3.1.7",
     "vue-router": "^4.2.5",
     "vue3-websocket": "^1.0.11",
-    "vuex": "^4.1.0"
+    "vuex": "^4.1.0",
+    "vuex-persistedstate": "^4.1.0"
   },
   "devDependencies": {
     "@tsconfig/node18": "^18.2.2",

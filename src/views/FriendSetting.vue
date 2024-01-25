@@ -60,7 +60,7 @@ async function friHidden(userNo: number) {
     });
     await alert("친구가 숨김되었습니다.");
   }
-//   window.location.reload();
+  router.go(0);
      
 }
 
@@ -74,8 +74,7 @@ async function friDelete(userNo: number) {
     });
     await alert("친구가 차단되었습니다.");
   }
-//   const currentPath = router.currentRoute.value.path;
-//   await router.push({ path: currentPath });
+  router.go(0);
      
 }
 
@@ -89,7 +88,7 @@ async function friRollback(userNo: number) {
     });
     await alert("복구가 완료되었습니다.");
   }
-  router.push("/friendSetting");
+  router.go(0);
      
 }
 

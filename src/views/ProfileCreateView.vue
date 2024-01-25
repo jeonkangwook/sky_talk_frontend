@@ -94,17 +94,17 @@ function getLocalImagePath(imgPath: string | undefined): string {
     프로필 관리
     <form @submit.prevent="onSubmit">
       <div>
-        <input type="text" placeholder="이름" v-model="nickname">
+        <input type="text" placeholder="이름" v-model="nickname" class="form-control">
       </div>
       <div>
-        <input type="text" placeholder="상태 메시지" v-model="status">
+        <input type="text" placeholder="상태 메시지" v-model="status" class="form-control">
       </div>
       <div>
-        <img v-if="imageUrl" :src="imageUrl" alt="Uploaded Image">
+        <img v-if="imageUrl" :src="imageUrl" alt="Uploaded Image" class="mar-5">
         <img :src="getLocalImagePath(imgPath)" alt="프로필 사진" v-if="imgPath" v-show="!imageUrl">
-        <input type="file" ref="fileInput" @change="handleFileChange">
+        <input type="file" ref="fileInput" @change="handleFileChange" class="btn btn-outline-secondary">
       </div>
-      <button type="submit">저장</button>
+      <button type="submit" class="btn btn-primary">저장</button>
     </form>
   </div>
 </template>
@@ -113,5 +113,13 @@ function getLocalImagePath(imgPath: string | undefined): string {
 img {
   max-width: 100px;
   max-height: 100px;
+}
+.btn-outline-secondary{
+  margin-top: 5px;
+  margin-bottom: 5px;
+  width: 100%;
+}
+.mar-5{
+  margin-top: 5px;
 }
 </style>

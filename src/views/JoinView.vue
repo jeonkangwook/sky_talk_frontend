@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { inject, ref } from 'vue';
-import router from '@/router';
+import { useRouter,useRoute } from 'vue-router';
 
   const $axios = inject<any>('$axios');
 
+  const router = useRouter();
   const loginId = ref('');
   const password = ref('');
   const name = ref('');
@@ -30,7 +31,7 @@ import router from '@/router';
     console.log(response.data);
       if(response.data === "성공"){
         console.log('가입 성공');
-        router.push("/");
+        router.push("/login");
       }else{
         console.log('가입 실패');
       }

@@ -5,14 +5,18 @@ import { createPinia } from 'pinia'
 import axios from './plugins/axios'
 import 'bootstrap'
 import 'bootstrap/dist/css/bootstrap.min.css'
+import piniaPersist from 'pinia-plugin-persistedstate';
 
 
 import App from './App.vue'
 import router from './router'
 
+const pinia = createPinia();
+pinia.use(piniaPersist);
+
 const app = createApp(App)
 
-app.use(createPinia())
+app.use(pinia)
 app.use(router)
 app.use(axios as any)
 

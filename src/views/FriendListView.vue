@@ -3,7 +3,7 @@ import { inject, ref,computed,watch,onMounted  } from 'vue';
 import { useSessionStore } from '@/stores/session';
 import { useRouter } from 'vue-router';
 
-const sessionStore = useSessionStore()
+const sessionStore = useSessionStore();
 
 const loginId = ref('');
 const $axios = inject<any>('$axios');
@@ -36,9 +36,22 @@ onMounted(async () => {
         }
       });
       friendList.value = response.data;
+
+      const respon = await $axios.get('/api/profile', {
+        params: {
+          userNo: myUserNo.value
+        }
+      });
+      console.log("프로필",respon);
+      if(respon.data == ""){
+        router.push("/profileCreate");
+      }
+
     } catch (error) {
       console.error('문제 발생:', error);
     }
+
+
 });
 
 const handleFindFriend = async () => {
