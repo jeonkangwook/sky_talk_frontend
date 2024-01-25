@@ -52,8 +52,7 @@ const onSubmit = async () => {
     });
     if (fileInput.value && fileInput.value.files && fileInput.value.files.length > 0) {
       const formData = new FormData();
-      formData.append('image', fileInput.value.files[0]);
-      console.log("form",fileInput.value.files[0]);                                                                                                                               
+      formData.append('image', fileInput.value.files[0]);                                                                                                                             
       try {
         // API로 프로필 업데이트
         await $axios.post('/api/updateImage?userNo=' + myUserNo.value, formData);

@@ -193,7 +193,7 @@ function chatStart(userNo: number,sendUserNo: number) {
       <p>{{ formatTimestamp(room.chatDtm) }}</p>
       <!-- 추가적인 친구 정보를 여기에 표시 -->
     </div>
-    <div v-if="room.readYn == 'N' && room.userNo == UserNo">1</div>
+    <div v-if="room.readYn != '0' && room.userNo == UserNo" class="badge bg-danger">{{ room.readYn }}</div>
     <!-- <p><img :src="getLocalImagePath(room.imgPath)" alt="프로필 사진" v-if="room.imgPath"></p>
     <p>{{ room.nickName }}</p>
     <p>{{ room.content }}</p>

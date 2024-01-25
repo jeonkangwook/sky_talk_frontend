@@ -56,19 +56,32 @@
 </script>
 
 <template>
-  <div style="height: 1000px;">
+  <div style="height: 1000px;" class="flex-container">
     LoginView
-    <div>
-      <input type="text" placeholder="아이디" v-model="username">
+    <div class="form-floating mb-3 mg-top-20">
+      <input type="text" placeholder="아이디" v-model="username" class="form-control">
+      <label for="floatingInput">ID</label>
+    </div>
+    <div class="form-floating">
+      <input type="password" placeholder="비밀번호" v-model="password" class="form-control">
+      <label for="floatingPassword">Password</label>
     </div>
     <div>
-      <input type="password" placeholder="비밀번호" v-model="password">
-    </div>
-    <div>
-      <button type="button" @click="handleSubmit">로그인</button>
-      <button type="button" @click="handleJoin">회원가입</button>
+      <button type="button" @click="handleSubmit" class="btn btn-primary but">로그인</button>
+      <button type="button" @click="handleJoin" class="btn btn-secondary but">회원가입</button>
     </div>
   </div>
 </template>
 
-<style lang="scss" scoped></style>
+<style scoped>
+.but{
+
+}
+.flex-container {
+    /* display: flex; */
+  align-items: center;
+}
+.mg-top-20{
+  margin-top: 20px;
+}
+</style>

@@ -85,6 +85,11 @@ const router = createRouter({
       name: 'chatChat',
       component: () => import('../views/ChatChat.vue'),
     },
+    {
+      path: '/friendSetting',
+      name: 'friendSetting',
+      component: () => import('../views/FriendSetting.vue'),
+    },
   ]
 })
 

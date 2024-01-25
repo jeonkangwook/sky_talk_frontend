@@ -25,6 +25,7 @@ interface Friend {
   nickname: string;
   imgPath: string;
   status: string;
+  friCode: number;
 }
 
 onMounted(async () => {
@@ -122,23 +123,19 @@ function chatStart(userNo: number) {
 
 <template>
   <div>
-    FriendListView
-    <div>
-      <RouterLink to="/Profile">프로필 관리</RouterLink>
-      <br>
-      <RouterLink to="/chatChat">소켓</RouterLink>
-    </div>
-    <div>
-      <p>친구찾기</p>
-      <input type="text" placeholder="이름이나 아이디" v-model="loginId">
-      <button type="button" @click="handleFindFriend">찾기</button>
+    친구 리스트
+    <hr>
+    <p>친구찾기</p>
+    <div class="mb-3 flex-container">
+      <input type="text" placeholder="이름이나 아이디" v-model="loginId" class="form-control wd-200">
+      <button type="button" @click="handleFindFriend" class="btn btn-primary ">찾기</button>
     </div>
     <div v-if="nickname">
       <!-- API로부터 받은 데이터를 화면에 표시 -->
       <p>이름 : {{ nickname }}</p>
       <p>상태 메시지 : {{ status }}</p>
       <img :src="getLocalImagePath(imgPath)" alt="프로필 사진" v-if="imgPath">
-      <button type="button" v-show="nickname" :disabled="doubleFri" @click="handleAddFriend">친구추가</button>
+      <button type="button" v-show="nickname" :disabled="doubleFri" @click="handleAddFriend" class="btn btn-success">친구추가</button>
     </div>
     <div v-if="doubleFri">
       <p>이미 등록된 친구입니다.</p>
@@ -147,14 +144,15 @@ function chatStart(userNo: number) {
       <p>찾는 친구가 없습니다.</p>
     </div>
     <div>
-      <p>친구 리스트</p>
       <hr>
       <div v-for="friend in friendList" :key="friend.userNo" @click="chatStart(friend.userNo)">
-        <!-- 친구의 정보를 표시하는 예시 -->
-        <p>이름:{{ friend.nickname }}</p>
-        <p>상태 메시지:{{ friend.status }}</p>
-        <img :src="getLocalImagePath(friend.imgPath)" alt="프로필 사진" v-if="friend.imgPath">
-        <hr>
+        <div v-if="friend.nickname && friend.friCode == 0">
+          <!-- 친구의 정보를 표시하는 예시 -->
+          <p>이름:{{ friend.nickname }}</p>
+          <p>상태 메시지:{{ friend.status }}</p>
+          <img :src="getLocalImagePath(friend.imgPath)" alt="프로필 사진" v-if="friend.imgPath">
+          <hr>
+        </div>
       </div>
     </div>
 
@@ -166,4 +164,11 @@ img {
   max-width: 100px;
   max-height: 100px;
 }
+.wd-200{
+  width: 200px;
+}
+.flex-container {
+    display: flex;
+    align-items: center;
+  }
 </style>

@@ -8,4 +8,12 @@
       "path": "./tsconfig.app.json"
     }
   ],
+  "compilerOptions": {
+    // 다른 compilerOptions 설정들...
+
+    "types": [
+      // 기존에 있는 다른 타입들...
+      "jquery"
+    ]
+  }
 }

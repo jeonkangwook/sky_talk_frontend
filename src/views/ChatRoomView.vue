@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { inject, ref,computed,watch,onMounted ,onBeforeUnmount } from 'vue';
+import { inject, ref,computed,watch,onMounted ,onBeforeUnmount,watchEffect, nextTick  } from 'vue';
 import { useSessionStore } from '@/stores/session';
 import { useRouter,useRoute } from 'vue-router';
 import { io } from 'socket.io-client';
@@ -31,6 +31,7 @@ interface chat {
   getUserNo: number;
   sendUserNo: number;
   userNo: number;
+  readYn: string;
 }
 
 
@@ -53,18 +54,17 @@ const charList = async () => {
 };
 
 const read = async () => {
-  console.log("두가지중무엇일까요",UserNo.value)
   const respon = await $axios.post('/api/chatRead', {
       chatRoomNo : chatRoomNo.value,
       userNo : UserNo.value,
   });
 };
 socket.on('message', (data) => {
+    read();
     console.log('chat-message event received', data);
     // 수신된 메시지 처리
     // chatList를 업데이트하거나 다른 로직 수행
     charList();
-    read();
 });
 // socket.on('message', (data) => {
 //     console.log('Received message from server:', data.text);
@@ -72,6 +72,10 @@ socket.on('message', (data) => {
 //   });
 
 onMounted(async () => {
+  socket.emit('chat-message', {
+    chatRoomNo : chatRoomNo.value,
+    sendUserNo : UserNo.value,
+  });
   console.log("UserNo",UserNo.value);
   console.log("friUserNo",friUserNo);
   if(friUserNo){
@@ -102,6 +106,8 @@ onMounted(async () => {
   });
 
   chatList.value = response.data;
+  scrollToBottom();
+  
 });
 
 
@@ -141,44 +147,83 @@ const onSubmit = async() => {
   console.log("response",response);
   chatList.value = response.data;
   chatContent.value = "";
+  scrollToBottom();
 }
+
+const scrollToBottom = async () => {
+    await nextTick(() => {
+        const chatContainer = document.querySelector('.chat-container');
+        if (chatContainer) {
+          chatContainer.scrollTo(0, chatContainer.scrollHeight)
+        }
+      });
+    };
 </script>
 
 <template>
-    <h3>채팅</h3>
-    <div v-for="chat in chatList" :key="chat.chatNo" class="chat-container" ref="chatContainer">
-        <p v-if="chat.sendUserNo != UserNo" style="text-align: left;">
-        {{ chat.sendUserName }}: {{ chat.content }}<br> {{ formatTimestamp(chat.chatDtm) }}
-        </p>
-        <!-- 받는 사람이면 오른쪽으로 표시 -->
-        <p v-else style="text-align: right;">
-        {{ chat.sendUserName }}: {{ chat.content }}<br> {{ formatTimestamp(chat.chatDtm) }}
-        </p>
+    <h3 class="top">채팅</h3>
+    <div ref="chatContainer" class="chat-container" id="chatContainer">
+      <div v-for="chat in chatList" :key="chat.chatNo">
+          <br>
+          <div v-if="chat.sendUserNo != UserNo" style="text-align: left;">
+            {{ chat.sendUserName }}<br> {{ chat.content }}<br> {{ formatTimestamp(chat.chatDtm) }}
+          </div>
+          <!-- 받는 사람이면 오른쪽으로 표시 -->
+          <div v-else style="text-align: right;">
+            {{ chat.content }}<br> {{ formatTimestamp(chat.chatDtm) }}
+            <p v-if="chat.readYn == 'N'">1</p>
+          </div>
+      </div>
     </div>
-    <form @submit.prevent="onSubmit" class="chat-form">
-        <textarea name="content" id="content" cols="30" rows="10" v-model="chatContent"></textarea>
-        <button type="submit">전송</button>
-    </form>
+    <div class="chat-form-container">
+      <form @submit.prevent="onSubmit" class="chat-form mb-3">
+          <textarea name="content" id="content" cols="30" rows="10" v-model="chatContent" class="form-control" @keyup.enter="onSubmit"></textarea>
+          <button type="submit" class="btn btn-info right">전송</button>
+      </form>
+    </div>
 </template>
 <style scoped>
 textarea{
-    width: 90%;
+    width: 100%;
     height: 100px;
 }
+.right{
+  float: right;
+}
+  .chat-container {
+    overflow-y: auto !important;
+    max-height: 70%;
+    background-color: skyblue;
+  }
 
-/* .chat-container {
-  max-height: 70vh; 
-  overflow-y: auto;
-} */
+  .chat-form-container {
+    position: sticky;
+    bottom: 0;
+    background-color: white;
+    padding: 10px;
+    margin-top: 10px;
+    z-index: 1; /* 채팅창 위로 올리기 위해 z-index 추가 */
+  }
 
-/* .chat-form {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  padding: 10px;
-  background-color: #f0f0f0;
-  display: flex;
-} */
+  .chat-form {
+    display: flex;
+  }
+
+  textarea {
+    resize: none;
+    flex: 1; /* textarea가 남은 공간을 모두 차지하도록 함 */
+  }
+
+  button {
+    margin-left: 10px; /* 버튼과 textarea 사이에 간격 추가 */
+  }
+  .top{
+    position: sticky;
+    top: 0;
+    background-color: white;
+  }
+
+  
+  
 
 </style>

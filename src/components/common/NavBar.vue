@@ -22,16 +22,19 @@
 .nav-bar {
   width: 100%;
   height: 60px;
+  border: 1px solid blue;
 }
 
 .nav-list {
   display: flex;
   height: 100%;
+  
 }
 
 .nav-item {
   flex-basis: 33.333%;
   height: 100%;
+  border: 1px solid skyblue;
 }
 
 .nav-item > a {
@@ -40,5 +43,8 @@
   align-items: center;
   width: 100%;
   height: 100%;
+}
+ul{
+  padding-left: 0;
 }
 </style>
