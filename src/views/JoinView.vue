@@ -48,23 +48,29 @@ import { useRouter,useRoute } from 'vue-router';
     JoinView
     <form @submit.prevent="handleSubmit">
       <div>
-        <input type="text" v-model="loginId" placeholder="아이디">
+        <input type="text" v-model="loginId" placeholder="아이디" class="form-control">
       </div>
       <div>
-        <input type="password" v-model="password" placeholder="비밀번호">
+        <input type="password" v-model="password" placeholder="비밀번호" class="form-control">
       </div>
       <div>
-        <input type="name" v-model="name" placeholder="이름">
+        <input type="name" v-model="name" placeholder="이름" class="form-control">
       </div>
       <div>
-        <input type="date" v-model="birth" placeholder="생년월일">
+        <input type="date" v-model="birth" placeholder="생년월일" class="form-control">
       </div>
       <div>
-        <input type="text" v-model="mobile" placeholder="휴대폰 번호">
+        <input type="text" v-model="mobile" placeholder="휴대폰 번호" class="form-control">
       </div>
-      <button type="submit">가입</button>
+      <button type="submit" class="btn btn-dark">가입</button>
     </form>
   </div>
 </template>
 
-<style lang="scss" scoped></style>
+<style scoped>
+  .form-control{
+    margin-top: 5px;
+    margin-bottom: 5px;
+
+  }
+</style>

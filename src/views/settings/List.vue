@@ -6,9 +6,13 @@ const router = useRouter();
 
 const { clearSession } = useSessionStore()
 const logout = async () => {
-  clearSession();
-  await alert("로그아웃되었습니다.");
-  router.push("/login");
+  const confirmMessage = `로그아웃 하시겠습니까?`;
+
+  if (confirm(confirmMessage)) {
+    clearSession();
+    await alert("로그아웃되었습니다.");
+    router.push("/login");
+  }
 };
 
 </script>
@@ -19,11 +23,15 @@ const logout = async () => {
     <ul class="list-group">
       <li class="list-group-item"><RouterLink to="/Profile">프로필 관리</RouterLink></li>
       <li class="list-group-item"><RouterLink to="/friendSetting">친구 관리</RouterLink></li>
-      <li class="list-group-item" @click="logout">로그아웃</li>
+      <li class="list-group-item"><a href="" @click="logout">로그아웃</a></li>
       <li class="list-group-item">A fourth item</li>
       <li class="list-group-item">And a fifth one</li>
     </ul>
   </div>
 </template>
 
-<style lang="scss" scoped></style>
+<style scoped>
+.list-group{
+  margin-top: 10px;
+}
+</style>

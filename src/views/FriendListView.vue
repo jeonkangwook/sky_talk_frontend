@@ -139,26 +139,26 @@ function chatStart(userNo: number) {
     친구 리스트
     <hr>
     <p>친구찾기</p>
-    <div class="mb-3 flex-container">
+    <div class="mb-3 flex-container pad">
       <input type="text" placeholder="이름이나 아이디" v-model="loginId" class="form-control wd-200">
       <button type="button" @click="handleFindFriend" class="btn btn-primary ">찾기</button>
     </div>
-    <div v-if="nickname">
+    <div v-if="nickname" class="pad">
       <!-- API로부터 받은 데이터를 화면에 표시 -->
       <p>이름 : {{ nickname }}</p>
       <p>상태 메시지 : {{ status }}</p>
       <img :src="getLocalImagePath(imgPath)" alt="프로필 사진" v-if="imgPath">
       <button type="button" v-show="nickname" :disabled="doubleFri" @click="handleAddFriend" class="btn btn-success">친구추가</button>
     </div>
-    <div v-if="doubleFri">
+    <div v-if="doubleFri" class="pad">
       <p>이미 등록된 친구입니다.</p>
     </div>
-    <div v-else-if="notFri">
+    <div v-else-if="notFri" class="pad">
       <p>찾는 친구가 없습니다.</p>
     </div>
+    <hr>
     <div>
-      <hr>
-      <div v-for="friend in friendList" :key="friend.userNo" @click="chatStart(friend.userNo)">
+      <div v-for="friend in friendList" :key="friend.userNo" @click="chatStart(friend.userNo)" class="pad">
         <div v-if="friend.nickname && friend.friCode == 0">
           <!-- 친구의 정보를 표시하는 예시 -->
           <p>이름:{{ friend.nickname }}</p>
@@ -168,14 +168,13 @@ function chatStart(userNo: number) {
         </div>
       </div>
     </div>
-
   </div>
 </template>
 
 <style scoped>
 img {
-  max-width: 100px;
-  max-height: 100px;
+  max-width: 80px;
+  max-height: 80px;
 }
 .wd-200{
   width: 200px;
@@ -184,4 +183,7 @@ img {
     display: flex;
     align-items: center;
   }
+.pad{
+  padding: 0 10px 0 10px;
+}
 </style>

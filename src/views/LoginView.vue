@@ -41,6 +41,7 @@
         router.push("/");
       }else{
         console.log('로그인 실패');
+        alert("입력하신 정보를 다시 확인 해주시기 바랍니다.");
       }
 
     } catch (error) {
