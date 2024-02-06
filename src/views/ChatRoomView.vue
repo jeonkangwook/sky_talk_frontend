@@ -37,11 +37,12 @@ interface chat {
 
 
 const formatTimestamp = (timestamp: string) => {
+    const month = String(timestamp[1]).padStart(2, '0');
     const day = String(timestamp[2]).padStart(2, '0');
     const hours = String(timestamp[3]).padStart(2, '0');
     const minutes = String(timestamp[4]).padStart(2, '0');
 
-    return `${day}일 ${hours}:${minutes}`;
+    return `${month}-${day} ${hours}:${minutes}`;
 };
 
 const charList = async () => {
@@ -87,25 +88,22 @@ onMounted(async () => {
     });
     console.log("ressss",res);
   
-    if(res.data !== 0){
+    if(res.data != 0){
       chatRoomNo.value = res.data;
     }
   }else{
     chatRoomNo.value = route.query.chatRoomNo;
   }
 
-  const response = await $axios.get('/api/chatContent', {params: 
-    {
-      chatRoomNo : chatRoomNo.value
+  const response = await $axios.get('/api/chatContent', {
+    params: {
+      chatRoomNo: chatRoomNo.value
     }
   });
-
-  const respon = await $axios.post('/api/chatRead', {
-      chatRoomNo : chatRoomNo.value,
-      userNo : UserNo.value,
-  });
-
   chatList.value = response.data;
+
+  read();
+
   scrollToBottom();
   
 });
@@ -170,8 +168,9 @@ const scrollToBottom = async () => {
           </div>
           <!-- 받는 사람이면 오른쪽으로 표시 -->
           <div v-else style="text-align: right;">
-            {{ chat.content }}<br> {{ formatTimestamp(chat.chatDtm) }}
-            <p v-if="chat.readYn == 'N'">1</p>
+            {{ chat.content }}<br> 
+            <span v-if="chat.readYn == 'N'" class="num-add">1</span>
+            <span class="date">{{ formatTimestamp(chat.chatDtm) }}</span>
           </div>
       </div>
     </div>
@@ -181,15 +180,18 @@ const scrollToBottom = async () => {
           <button type="submit" class="btn btn-info right">전송</button>
       </form>
     </div>
+    <div>
+      파일첨부할곳
+    </div>
 </template>
 <style scoped>
-textarea{
-    width: 100%;
-    height: 100px;
-}
-.right{
-  float: right;
-}
+  textarea{
+      width: 100%;
+      height: 100px;
+  }
+  .right{
+    float: right;
+  }
   .chat-container {
     overflow-y: auto !important;
     max-height: 70%;
@@ -222,8 +224,12 @@ textarea{
     top: 0;
     background-color: white;
   }
-
-  
+  .num-add{
+    padding-right: 20px;
+  }
+  .date{
+    font-size: small;
+  }
   
 
 </style>

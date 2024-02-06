@@ -104,11 +104,12 @@ socket.on('message', (data) => {
 });
 
 const formatTimestamp = (timestamp: string) => {
+    const month = String(timestamp[1]).padStart(2, '0');
     const day = String(timestamp[2]).padStart(2, '0');
     const hours = String(timestamp[3]).padStart(2, '0');
     const minutes = String(timestamp[4]).padStart(2, '0');
 
-    return `${day}일 ${hours}:${minutes}`;
+    return `${month}-${day} ${hours}:${minutes}`;
 };
 
 onMounted(async () => {
@@ -185,28 +186,80 @@ function chatStart(userNo: number,sendUserNo: number) {
     대화목록
   </div>
   <hr>
-  <div v-for="room in chatRoomList" :key="room.chatRoomNo" @click="chatStart(room.userNo,room.sendUserNo)">
+  <!-- <div v-for="room in chatRoomList" :key="room.chatRoomNo" @click="chatStart(room.userNo,room.sendUserNo)">
     <div v-if="room.exclusiveFriendData">
       <img :src="getLocalImagePath(room.exclusiveFriendData.imgPath)" alt="프로필 사진" v-if="room.exclusiveFriendData.imgPath">
-      <p>{{ room.exclusiveFriendData.nickName }}</p>
-      <p>{{ room.content }}</p>
-      <p>{{ formatTimestamp(room.chatDtm) }}</p>
-      <!-- 추가적인 친구 정보를 여기에 표시 -->
+      <img src="../assets/images/noimage.png" alt="프로필 사진" v-else class="profile-image">
+      <div class="friend-info">
+        <p>{{ room.exclusiveFriendData.nickName }}</p>
+        <p>{{ room.content }}</p>
+        <p>{{ formatTimestamp(room.chatDtm) }}</p>
+        <div v-if="room.readYn != '0' && room.userNo == UserNo" class="badge bg-danger">{{ room.readYn }}</div>
+      </div>
     </div>
-    <div v-if="room.readYn != '0' && room.userNo == UserNo" class="badge bg-danger">{{ room.readYn }}</div>
-    <!-- <p><img :src="getLocalImagePath(room.imgPath)" alt="프로필 사진" v-if="room.imgPath"></p>
-    <p>{{ room.nickName }}</p>
-    <p>{{ room.content }}</p>
-    <p>{{ formatTimestamp(room.chatDtm) }}</p> -->
+    <hr>
+  </div> -->
+  <div v-for="room in chatRoomList" :key="room.chatRoomNo" @click="chatStart(room.userNo,room.sendUserNo)" class="chat-room">
+    <div v-if="room.exclusiveFriendData" class="chat-content">
+      <div class="profile-info">
+        <img :src="getLocalImagePath(room.exclusiveFriendData.imgPath)" alt="프로필 사진" v-if="room.exclusiveFriendData.imgPath" class="profile-image">
+        <img src="../assets/images/noimage.png" alt="프로필 사진" v-else class="profile-image">
+        <div class="friend-info">
+          <p>{{ room.exclusiveFriendData.nickName }}</p>
+          <p>{{ room.content }}</p>
+        </div>
+      </div>
+      <div class="date-info">
+        <div v-if="room.readYn != '0' && room.userNo == UserNo" class="badge bg-danger read">{{ room.readYn }}</div>
+        <p>{{ formatTimestamp(room.chatDtm) }}</p>
+      </div>
+    </div>
     <hr>
   </div>
-
-
 </template>
 
 <style scoped>
 img {
-  max-width: 50px;
-  max-height: 50px;
+  width: 60px; /* 이미지의 너비를 200px로 설정 */
+  height: 50px;
+  border-radius: 70%;
+  overflow: hidden;
+  object-fit: cover;
+}
+.friend-info {
+    flex-grow: 1; /* 이름 부분이 남은 공간을 모두 차지하도록 설정 */
+}
+.chat-room {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.chat-content {
+  display: flex;
+  width: 100%;
+  border-bottom: 1px solid #ced4da;
+}
+
+.profile-info {
+  display: flex;
+  align-items: center;
+}
+
+.profile-image {
+  max-width: 50px; /* 이미지의 최대 너비 설정 */
+  margin-right: 10px; /* 이미지와 닉네임 간격 설정 */
+}
+
+.friend-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.date-info {
+  position: absolute; /* 날짜를 절대 위치로 설정합니다. */
+  bottom: 0; /* 하단에 위치하도록 설정합니다. */
+  right: 10px; /* 우측에 위치하도록 설정합니다. */
+  font-size: small;
 }
 </style>

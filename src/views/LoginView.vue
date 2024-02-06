@@ -58,7 +58,8 @@
 
 <template>
   <div style="height: 1000px;" class="flex-container">
-    LoginView
+    <h3 class="color">Sky Talk</h3>
+    로그인
     <div class="form-floating mb-3 mg-top-20">
       <input type="text" placeholder="아이디" v-model="username" class="form-control">
       <label for="floatingInput">ID</label>
@@ -67,16 +68,18 @@
       <input type="password" placeholder="비밀번호" v-model="password" class="form-control">
       <label for="floatingPassword">Password</label>
     </div>
-    <div>
+    <div class="cen">
       <button type="button" @click="handleSubmit" class="btn btn-primary but">로그인</button>
+      <span style="margin: 0 10px;"></span>
       <button type="button" @click="handleJoin" class="btn btn-secondary but">회원가입</button>
     </div>
   </div>
 </template>
 
 <style scoped>
-.but{
-
+.cen{
+  text-align: center;
+  margin-top: 10px;
 }
 .flex-container {
     /* display: flex; */
@@ -84,5 +87,8 @@
 }
 .mg-top-20{
   margin-top: 20px;
+}
+.color{
+  color: skyblue;
 }
 </style>

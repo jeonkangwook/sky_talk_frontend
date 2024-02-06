@@ -19,7 +19,7 @@ const logout = async () => {
 
 <template>
   <div style="height: 1000px;">
-    SettingView
+    설정
     <ul class="list-group">
       <li class="list-group-item"><RouterLink to="/Profile">프로필 관리</RouterLink></li>
       <li class="list-group-item"><RouterLink to="/friendSetting">친구 관리</RouterLink></li>

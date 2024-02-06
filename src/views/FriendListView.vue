@@ -2,6 +2,7 @@
 import { inject, ref,computed,watch,onMounted  } from 'vue';
 import { useSessionStore } from '@/stores/session';
 import { useRouter } from 'vue-router';
+import Modal from '@/components/Modal.vue';
 
 const sessionStore = useSessionStore();
 
@@ -117,7 +118,7 @@ function getLocalImagePath(imagePath: string | undefined): string {
 //   router.push({ name: 'chatRoom', params: { userNo } });
 //   console.log("ccc");
 // };
-function chatStart(userNo: number) {
+function chatStart(userNo: number | undefined) {
   const confirmMessage = `채팅을 시작하시겠습니까?`;
 
   if (confirm(confirmMessage)) {
@@ -131,12 +132,42 @@ function chatStart(userNo: number) {
   }
 }
 
+// 모달 상태 및 메소드
+const modalShow = ref(false);
+const modalContent = ref<Friend | null>(null);
+
+const showModal = (friend:Friend) => {
+  modalContent.value = friend;
+  modalShow.value = true;
+};
+
+
+const closeModal = () => {
+  modalShow.value = false;
+  modalContent.value = null;
+};
+
 
 </script>
 
 <template>
   <div>
-    친구 리스트
+    친구
+    <!-- 모달 창 -->
+    <Modal :show="modalShow" @close="closeModal">
+      <button type="button" class="btn-close"  aria-label="Close" @click="closeModal"></button>
+      <div class="center-content">
+        <img :src="getLocalImagePath(modalContent?.imgPath)" alt="프로필 사진" v-if="modalContent?.imgPath" class="img-size">
+        <img src="../assets/images/noimage.png" alt="프로필 사진" v-else class="img-size">
+        <div class="bot">
+          <h2 class="mg-10">{{ modalContent ? modalContent.nickname : '' }}</h2>
+          <p>{{ modalContent ? modalContent.status : '' }}</p>
+        </div>
+      </div>
+      <div class="bottom-buttons">
+        <button @click="chatStart(modalContent?.userNo)" class="btn btn-outline-dark">1:1 채팅하기</button>
+      </div>
+    </Modal>
     <hr>
     <p>친구찾기</p>
     <div class="mb-3 flex-container pad">
@@ -158,12 +189,16 @@ function chatStart(userNo: number) {
     </div>
     <hr>
     <div>
-      <div v-for="friend in friendList" :key="friend.userNo" @click="chatStart(friend.userNo)" class="pad">
-        <div v-if="friend.nickname && friend.friCode == 0">
+      친구목록
+      <div v-for="friend in friendList" :key="friend.userNo" @click="showModal(friend)" class="pad">
+        <div v-if="friend.nickname && friend.friCode == 0" class="friend-container">
           <!-- 친구의 정보를 표시하는 예시 -->
-          <p>이름:{{ friend.nickname }}</p>
-          <p>상태 메시지:{{ friend.status }}</p>
-          <img :src="getLocalImagePath(friend.imgPath)" alt="프로필 사진" v-if="friend.imgPath">
+          <img :src="getLocalImagePath(friend.imgPath)" alt="프로필 사진" v-if="friend.imgPath" class="profile-image">
+          <img src="../assets/images/noimage.png" alt="프로필 사진" v-else class="profile-image">
+          <div class="friend-info">
+            <p class="name">{{ friend.nickname }}</p>
+          </div>
+          <!-- <p>상태 메시지:{{ friend.status }}</p> -->
           <hr>
         </div>
       </div>
@@ -173,8 +208,11 @@ function chatStart(userNo: number) {
 
 <style scoped>
 img {
-  max-width: 80px;
-  max-height: 80px;
+  width: 60px; /* 이미지의 너비를 200px로 설정 */
+  height: 50px;
+  border-radius: 70%;
+  overflow: hidden;
+  object-fit: cover;
 }
 .wd-200{
   width: 200px;
@@ -185,5 +223,62 @@ img {
   }
 .pad{
   padding: 0 10px 0 10px;
+  
+}
+.btn-close{
+  float: right;
+}
+.center-content {
+  /* display: flex;
+  flex-direction: column;
+  align-items: center; */
+  justify-content: center;
+  text-align: center;
+  /* height: 100vh;  */
+  margin-top: 10%;
+  position: absolute;
+  width: 85%;
+  height: 30%;
+}
+.mg-10{
+  margin-top: 10px;
+}
+.bottom-buttons {
+  position: absolute;
+  bottom: 0;
+  margin-bottom: 30px;
+  width: 85%;
+  text-align: center;
+}
+.friend-container {
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #ced4da;
+    padding: 5px 0;
+
+}
+
+.profile-image {
+    max-width: 100px; /* 이미지의 최대 너비를 조절할 수 있습니다. */
+    margin-right: 10px; /* 이미지와 이름 사이에 간격을 주기 위해 마진 추가 */
+}
+
+.friend-info {
+    flex-grow: 1; /* 이름 부분이 남은 공간을 모두 차지하도록 설정 */
+}
+
+.name {
+    margin: 0; /* 기본 마진 제거 */
+    float: right;
+}
+.img-size{
+  width: 200px;
+  height: 200px;
+  border-radius: 70%;
+  overflow: hidden;
+  object-fit: cover;
+}
+.bot{
+  padding-top: 25px;
 }
 </style>
