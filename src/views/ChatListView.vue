@@ -11,8 +11,10 @@ const route = useRoute();
 const chatRoomList = ref<room[]>([]);
 const sessionStore = useSessionStore();
 const UserNo = ref(sessionStore.userno);
-const friUserNo = ref(0);
-const friendList = ref<Friend[]>([]);
+// const friUserNo = ref(0);
+const sendUserNo = ref(0);
+// const friendList = ref<Friend[]>([]);
+const chatList = ref<Friend[]>([]);
 
 // interface room {
 //   content: string;
@@ -46,6 +48,7 @@ interface Friend {
   nickname: string;
   imgPath: string;
   status: string;
+  sendUserNo: number;
 }
 
 const socket = io('http://localhost:3000', { 
@@ -55,45 +58,65 @@ const socket = io('http://localhost:3000', {
 });
 
 const charList = async () => {
-  const res = await $axios.get('/api/chatRoomList', {params: 
+  const chatRoomRes = await $axios.get('/api/chatRoomList', {params: 
     {
       userNo : UserNo.value,
     }
   });
-  chatRoomList.value = res.data;
-
-  const response = await $axios.get('/api/friendList', {
+  
+  const chatUserRes = await $axios.get('/api/chatRoomData', {
     params: {
-      userNo: UserNo.value
+      userNo: UserNo.value,
     }
   });
-  friendList.value = response.data;
 
-  const currentUserNo = UserNo.value;
+  const chatRoomListData = chatRoomRes.data;
+  const chatListData = chatUserRes.data;
 
-  // 현재 사용자가 아닌 친구 목록을 필터링합니다.
-  const otherFriends = friendList.value.filter((friend) => friend.userNo != currentUserNo);
-
-  // 친구 목록과 채팅방 목록을 비교하여 필요한 정보를 추가합니다.
-  const exclusiveFriendData = otherFriends.filter((friend) =>
-    chatRoomList.value.some((chatRoom) => chatRoom.userNo === friend.userNo || chatRoom.sendUserNo === friend.userNo)
-  );
-
-  // chatRoomList 배열의 각 요소에 exclusiveFriendData 속성을 추가합니다.
-  chatRoomList.value.forEach((chatRoom) => {
-    const matchingFriend = exclusiveFriendData.find(
-      (friend) => friend.userNo === chatRoom.userNo || friend.userNo === chatRoom.sendUserNo
-    );
-    // matchingFriend이 존재할 때만 데이터를 추가합니다.
-    if (matchingFriend) {
-      // chatRoomList.imgPath = 
-      chatRoom.exclusiveFriendData = {
-        imgPath: matchingFriend.imgPath,
-        nickName: matchingFriend.nickname,
-        userNo: matchingFriend.userNo,
-      };
+  // 비교하여 동일한 경우 병합
+  chatRoomListData.forEach((room: any) => {
+    const correspondingChat = chatListData.find((chat: any) => chat.chatRoomNo == room.chatRoomNo);
+    if (correspondingChat) {
+      // chatRoomList에 nickName과 imgPath 추가
+      room.nickName = correspondingChat.nickName;
+      room.imgPath = correspondingChat.imgPath;
     }
   });
+
+  chatRoomList.value = chatRoomListData;
+
+  // const response = await $axios.get('/api/friendList', {
+  //   params: {
+  //     userNo: UserNo.value
+  //   }
+  // });
+  // friendList.value = response.data;
+
+  // const currentUserNo = UserNo.value;
+
+  // // 현재 사용자가 아닌 친구 목록을 필터링합니다.
+  // const otherFriends = friendList.value.filter((friend) => friend.userNo != currentUserNo);
+
+  // // 친구 목록과 채팅방 목록을 비교하여 필요한 정보를 추가합니다.
+  // const exclusiveFriendData = otherFriends.filter((friend) =>
+  //   chatRoomList.value.some((chatRoom) => chatRoom.userNo === friend.userNo || chatRoom.sendUserNo === friend.userNo)
+  // );
+
+  // // chatRoomList 배열의 각 요소에 exclusiveFriendData 속성을 추가합니다.
+  // chatRoomList.value.forEach((chatRoom) => {
+  //   const matchingFriend = exclusiveFriendData.find(
+  //     (friend) => friend.userNo === chatRoom.userNo || friend.userNo === chatRoom.sendUserNo
+  //   );
+  //   // matchingFriend이 존재할 때만 데이터를 추가합니다.
+  //   if (matchingFriend) {
+  //     // chatRoomList.imgPath = 
+  //     chatRoom.exclusiveFriendData = {
+  //       imgPath: matchingFriend.imgPath,
+  //       nickName: matchingFriend.nickname,
+  //       userNo: matchingFriend.userNo,
+  //     };
+  //   }
+  // });
 };
 
 socket.on('message', (data) => {
@@ -113,46 +136,85 @@ const formatTimestamp = (timestamp: string) => {
 };
 
 onMounted(async () => {
-  const res = await $axios.get('/api/chatRoomList', {params: 
-    {
-      userNo : UserNo.value,
-    }
-  });
-  chatRoomList.value = res.data;
-
-  const response = await $axios.get('/api/friendList', {
+  const chatRoomRes = await $axios.get('/api/chatRoomList', {
     params: {
-      userNo: UserNo.value
+      userNo: UserNo.value,
     }
   });
-  friendList.value = response.data;
-
-  const currentUserNo = UserNo.value;
-
-  // 현재 사용자가 아닌 친구 목록을 필터링합니다.
-  const otherFriends = friendList.value.filter((friend) => friend.userNo != currentUserNo);
-
-  // 친구 목록과 채팅방 목록을 비교하여 필요한 정보를 추가합니다.
-  const exclusiveFriendData = otherFriends.filter((friend) =>
-    chatRoomList.value.some((chatRoom) => chatRoom.userNo === friend.userNo || chatRoom.sendUserNo === friend.userNo)
-  );
-
-  // chatRoomList 배열의 각 요소에 exclusiveFriendData 속성을 추가합니다.
-  chatRoomList.value.forEach((chatRoom) => {
-    const matchingFriend = exclusiveFriendData.find(
-      (friend) => friend.userNo === chatRoom.userNo || friend.userNo === chatRoom.sendUserNo
-    );
-    // matchingFriend이 존재할 때만 데이터를 추가합니다.
-    if (matchingFriend) {
-      // chatRoomList.imgPath = 
-      chatRoom.exclusiveFriendData = {
-        imgPath: matchingFriend.imgPath,
-        nickName: matchingFriend.nickname,
-        userNo: matchingFriend.userNo,
-      };
+  const chatUserRes = await $axios.get('/api/chatRoomData', {
+    params: {
+      userNo: UserNo.value,
     }
   });
+
+  const chatRoomListData = chatRoomRes.data;
+  const chatListData = chatUserRes.data;
+
+  // 비교하여 동일한 경우 병합
+  chatRoomListData.forEach((room: any) => {
+    const correspondingChat = chatListData.find((chat: any) => chat.chatRoomNo == room.chatRoomNo);
+    if (correspondingChat) {
+      // chatRoomList에 nickName과 imgPath 추가
+      room.nickName = correspondingChat.nickName;
+      room.imgPath = correspondingChat.imgPath;
+    }
+  });
+
+  chatRoomList.value = chatRoomListData;
 });
+
+// onMounted(async () => {
+//   const res = await $axios.get('/api/chatRoomList', {params: 
+//     {
+//       userNo : UserNo.value,
+//     }
+//   });
+//   chatRoomList.value = res.data;
+//   console.log("결과는 과연",chatRoomList.value);
+
+//   const chatUser = await $axios.get('/api/chatRoomData',{params:
+//     {
+//       userNo : UserNo.value,
+//     }
+//   });
+
+//   chatList.value = chatUser.data;
+//   console.log("결과는 과연",chatList.value);
+
+//   // const response = await $axios.get('/api/friendList', {
+//   //   params: {
+//   //     userNo: UserNo.value
+//   //   }
+//   // });
+//   // friendList.value = response.data;
+
+//   const currentUserNo = UserNo.value;
+
+//   // 현재 사용자가 아닌 친구 목록을 필터링합니다.
+//   const otherFriends = chatList.value.filter((friend) => friend.userNo != currentUserNo || friend.sendUserNo != currentUserNo);
+
+//   // 친구 목록과 채팅방 목록을 비교하여 필요한 정보를 추가합니다.
+//   const exclusiveFriendData = otherFriends.filter((friend) =>
+//     chatRoomList.value.some((chatRoom) => chatRoom.userNo === friend.userNo || chatRoom.sendUserNo === friend.userNo 
+//     || chatRoom.userNo === friend.sendUserNo || chatRoom.sendUserNo === friend.sendUserNo)
+//   );
+
+//   // chatRoomList 배열의 각 요소에 exclusiveFriendData 속성을 추가합니다.
+//   chatRoomList.value.forEach((chatRoom) => {
+//     const matchingFriend = exclusiveFriendData.find(
+//       (friend) => friend.userNo === chatRoom.userNo || friend.userNo === chatRoom.sendUserNo || friend.sendUserNo === chatRoom.userNo || friend.sendUserNo === chatRoom.sendUserNo
+//     );
+//     // matchingFriend이 존재할 때만 데이터를 추가합니다.
+//     if (matchingFriend) {
+//       // chatRoomList.imgPath = 
+//       chatRoom.exclusiveFriendData = {
+//         imgPath: matchingFriend.imgPath,
+//         nickName: matchingFriend.nickname,
+//         userNo: matchingFriend.userNo,
+//       };
+//     }
+//   });
+// });
 
 function getLocalImagePath(imagePath: string | undefined): string {
     if (imagePath) {
@@ -187,11 +249,11 @@ function chatStart(userNo: number,sendUserNo: number) {
   </div>
   <hr>
   <!-- <div v-for="room in chatRoomList" :key="room.chatRoomNo" @click="chatStart(room.userNo,room.sendUserNo)">
-    <div v-if="room.exclusiveFriendData">
-      <img :src="getLocalImagePath(room.exclusiveFriendData.imgPath)" alt="프로필 사진" v-if="room.exclusiveFriendData.imgPath">
+    <div>
+      <img :src="getLocalImagePath(room.imgPath)" alt="프로필 사진" v-if="room.imgPath">
       <img src="../assets/images/noimage.png" alt="프로필 사진" v-else class="profile-image">
       <div class="friend-info">
-        <p>{{ room.exclusiveFriendData.nickName }}</p>
+        <p>{{ room.nickName }}</p>
         <p>{{ room.content }}</p>
         <p>{{ formatTimestamp(room.chatDtm) }}</p>
         <div v-if="room.readYn != '0' && room.userNo == UserNo" class="badge bg-danger">{{ room.readYn }}</div>
@@ -200,13 +262,13 @@ function chatStart(userNo: number,sendUserNo: number) {
     <hr>
   </div> -->
   <div v-for="room in chatRoomList" :key="room.chatRoomNo" @click="chatStart(room.userNo,room.sendUserNo)" class="chat-room">
-    <div v-if="room.exclusiveFriendData" class="chat-content">
+    <div class="chat-content">
       <div class="profile-info">
-        <img :src="getLocalImagePath(room.exclusiveFriendData.imgPath)" alt="프로필 사진" v-if="room.exclusiveFriendData.imgPath" class="profile-image">
+        <img :src="getLocalImagePath(room.imgPath)" alt="프로필 사진" v-if="room.imgPath" class="profile-image">
         <img src="../assets/images/noimage.png" alt="프로필 사진" v-else class="profile-image">
         <div class="friend-info">
-          <p>{{ room.exclusiveFriendData.nickName }}</p>
-          <p>{{ room.content }}</p>
+          <p class="name">{{ room.nickName }}</p>
+          <p class="content">{{ room.content }}</p>
         </div>
       </div>
       <div class="date-info">
@@ -249,6 +311,7 @@ img {
 .profile-image {
   max-width: 50px; /* 이미지의 최대 너비 설정 */
   margin-right: 10px; /* 이미지와 닉네임 간격 설정 */
+  margin-left: 10px;
 }
 
 .friend-info {
@@ -261,5 +324,15 @@ img {
   bottom: 0; /* 하단에 위치하도록 설정합니다. */
   right: 10px; /* 우측에 위치하도록 설정합니다. */
   font-size: small;
+}
+.name{
+  margin-top: 10px;
+  font-weight: bold;
+}
+.content {
+    width: 200px;
+    overflow: hidden; /* 넘치는 텍스트를 감출 때 사용합니다. */
+    white-space: nowrap; /* 텍스트가 줄 바꿈되지 않도록 합니다. */
+    text-overflow: ellipsis; /* 넘치는 텍스트를 ...으로 표시합니다. */
 }
 </style>

@@ -67,10 +67,7 @@ socket.on('message', (data) => {
     // chatList를 업데이트하거나 다른 로직 수행
     charList();
 });
-// socket.on('message', (data) => {
-//     console.log('Received message from server:', data.text);
-//     msg.value = data.text;
-//   });
+
 
 onMounted(async () => {
   socket.emit('chat-message', {
@@ -93,6 +90,16 @@ onMounted(async () => {
     }
   }else{
     chatRoomNo.value = route.query.chatRoomNo;
+  }
+
+  console.log("두둥",chatRoomNo);
+  console.log("두둥두둥",chatRoomNo.value);
+  if(chatRoomNo.value == ""){
+    console.log("두둥두둥두둥");
+    const re = await $axios.post('/api/chatRoomCreate', {
+      sendUserNo : UserNo.value,
+      userNo : friUserNo
+    });
   }
 
   const response = await $axios.get('/api/chatContent', {
@@ -164,7 +171,9 @@ const scrollToBottom = async () => {
       <div v-for="chat in chatList" :key="chat.chatNo">
           <br>
           <div v-if="chat.sendUserNo != UserNo" style="text-align: left;">
-            {{ chat.sendUserName }}<br> {{ chat.content }}<br> {{ formatTimestamp(chat.chatDtm) }}
+            <div class="name">{{ chat.sendUserName }}</div>
+            <div>{{ chat.content }}</div>
+            <div class="date"> {{ formatTimestamp(chat.chatDtm) }}</div>
           </div>
           <!-- 받는 사람이면 오른쪽으로 표시 -->
           <div v-else style="text-align: right;">
@@ -194,7 +203,7 @@ const scrollToBottom = async () => {
   }
   .chat-container {
     overflow-y: auto !important;
-    max-height: 70%;
+    height: 70%;
     background-color: skyblue;
   }
 
@@ -226,10 +235,13 @@ const scrollToBottom = async () => {
   }
   .num-add{
     padding-right: 20px;
+    font-weight: bold;
   }
   .date{
     font-size: small;
   }
-  
+  .name{
+    font-weight: bold;
+  }
 
 </style>

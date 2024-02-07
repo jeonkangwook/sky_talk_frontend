@@ -43,7 +43,7 @@ onMounted(async () => {
           userNo: myUserNo.value
         }
       });
-      console.log("프로필",respon);
+      // console.log("프로필",respon);
       if(respon.data == ""){
         router.push("/profileCreate");
       }
@@ -196,10 +196,10 @@ const closeModal = () => {
           <img :src="getLocalImagePath(friend.imgPath)" alt="프로필 사진" v-if="friend.imgPath" class="profile-image">
           <img src="../assets/images/noimage.png" alt="프로필 사진" v-else class="profile-image">
           <div class="friend-info">
-            <p class="name">{{ friend.nickname }}</p>
+            <div class="name">{{ friend.nickname }}</div>
+            <div class="status">{{ friend.status }}</div>
           </div>
           <!-- <p>상태 메시지:{{ friend.status }}</p> -->
-          <hr>
         </div>
       </div>
     </div>
@@ -220,11 +220,11 @@ img {
 .flex-container {
     display: flex;
     align-items: center;
+    padding: 0 10px;
   }
-.pad{
+/* .pad{
   padding: 0 10px 0 10px;
-  
-}
+} */
 .btn-close{
   float: right;
 }
@@ -254,31 +254,39 @@ img {
     display: flex;
     align-items: center;
     border-bottom: 1px solid #ced4da;
-    padding: 5px 0;
+    padding: 5px 10px;
 
 }
 
 .profile-image {
-    max-width: 100px; /* 이미지의 최대 너비를 조절할 수 있습니다. */
+    max-width: 50px; /* 이미지의 최대 너비를 조절할 수 있습니다. */
     margin-right: 10px; /* 이미지와 이름 사이에 간격을 주기 위해 마진 추가 */
 }
 
 .friend-info {
     flex-grow: 1; /* 이름 부분이 남은 공간을 모두 차지하도록 설정 */
+    flex-direction: column;
 }
 
 .name {
     margin: 0; /* 기본 마진 제거 */
-    float: right;
+    font-weight: bold;
+}
+.status{
+  margin-top: 5px;
+  width: 200px;
+  overflow: hidden; /* 넘치는 텍스트를 감출 때 사용합니다. */
+  white-space: nowrap; /* 텍스트가 줄 바꿈되지 않도록 합니다. */
+  text-overflow: ellipsis; /* 넘치는 텍스트를 ...으로 표시합니다. */
 }
 .img-size{
-  width: 200px;
-  height: 200px;
+  width: 60%;
+  height: 100%;
   border-radius: 70%;
   overflow: hidden;
   object-fit: cover;
 }
 .bot{
-  padding-top: 25px;
+  padding-top: 30%;
 }
 </style>
