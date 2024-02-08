@@ -237,8 +237,8 @@ img {
   /* height: 100vh;  */
   margin-top: 10%;
   position: absolute;
-  width: 85%;
-  height: 30%;
+  width: 90%;
+  height: 35%;
 }
 .mg-10{
   margin-top: 10px;

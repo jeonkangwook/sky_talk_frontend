@@ -5,6 +5,7 @@ import { createPinia } from 'pinia'
 import axios from './plugins/axios'
 import 'bootstrap'
 import 'bootstrap/dist/css/bootstrap.min.css'
+import 'bootstrap-icons/font/bootstrap-icons.css';
 import piniaPersist from 'pinia-plugin-persistedstate';
 
 
